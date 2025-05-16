@@ -12,7 +12,7 @@ from orbit_params import *
 import numpy as np
 
 def isocalc(f_atm, Mp, Mstar, F0, Fp, T, d, time = 5e9, mechanism = 'XUV', rad_evol = True,
-N_H = 0, N_He = 0, N_D = 0, N_O = 0, N_C = 0, melt_fraction_override = False,
+N_H = 0, N_He = 0, N_D = 0, N_O = 0, N_C = 0, N_N=0, N_S=0, melt_fraction_override = False,
 mu = mu_solar, eps = 0.15, activity = 'medium', flux_model = 'power law', stellar_type = 'M1',
 Rp_override = False, t_sat = 5e8,
 n_steps = int(1e5), t0 = 1e6, rho_rcb = 1.0, RR = True, thermal = True, 
@@ -103,6 +103,8 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
     N_D_int = 0
     N_O_int = 0
     N_C_int = 0
+    N_N_int = 0
+    N_S_int = 0
     if n_atmodeller == 0:
         T_surf_analytic = 0
         T_surf_atmod = 0
@@ -124,7 +126,9 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
     y2 = 1*N_He # He number [atoms]
     y3 = 1*N_D # D number [atoms]
     y4 = 1*N_O # O number [atoms]
-    y5 = 1*N_C # O number [atoms]
+    y5 = 1*N_C # C number [atoms]
+    y6 = 1*N_N # N number [atoms]
+    y7 = 1*N_S # S number [atoms]
 
 ###_____Initialize arrays_____###
 
@@ -143,28 +147,38 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
     y3_a = np.zeros(n_tot) # D number array [atoms]
     y4_a = np.zeros(n_tot) # O number array [atoms]
     y5_a = np.zeros(n_tot) # C number array [atoms]
+    y6_a = np.zeros(n_tot) # N number array [atoms]
+    y7_a = np.zeros(n_tot) # S number array [atoms]
     y1_a_int = np.zeros(n_tot) # mantle H number array [atoms]
     y2_a_int = np.zeros(n_tot) # mantle He number array [atoms]
     y3_a_int = np.zeros(n_tot) # mantle D number array [atoms]
     y4_a_int = np.zeros(n_tot) # mantle O number array [atoms]
     y5_a_int = np.zeros(n_tot) # mantle C number array [atoms]
+    y6_a_int = np.zeros(n_tot) # mantle N number array [atoms]
+    y7_a_int = np.zeros(n_tot) # mantle S number array [atoms]
     H2_a = np.zeros(n_tot) # atmospheric H2 number array [molecules]
     H2O_a = np.zeros(n_tot) # atmospheric H2O number array [molecules]
     O2_a = np.zeros(n_tot) # atmospheric O2 number array [molecules]
     CO2_a = np.zeros(n_tot) # atmospheric CO2 number array [molecules]
     CO_a = np.zeros(n_tot) # atmospheric CO number array [molecules]
     CH4_a = np.zeros(n_tot) # atmospheric CH4 number array [molecules]
+    N2_a = np.zeros(n_tot) # atmospheric N2 number array [molecules] -> see atmodeller/atmodeller/solubulity/library/py first function is a list of species check with Collin if this is ok
+    S2_a = np.zeros(n_tot) # atmospheric S2 number array [molecules] -> same check with Collin
     fO2_a = np.zeros(n_tot) # fugacity array [bar]
     x1_a = np.zeros(n_tot) # H molar concentration array [ndim]
     x2_a = np.zeros(n_tot) # He molar concentration array [ndim]
     x3_a = np.zeros(n_tot) # D molar concentration array [ndim]
     x4_a = np.zeros(n_tot) # O molar concentration array [ndim]
     x5_a = np.zeros(n_tot) # C molar concentration array [ndim]
+    x6_a = np.zeros(n_tot) # N molar concentration array [ndim]
+    x7_a = np.zeros(n_tot) # S molar concentration array [ndim]
     Phi1_a = np.zeros(n_tot) # H number flux array [atoms/s/m2]
     Phi2_a = np.zeros(n_tot) # He number flux array [atoms/s/m2]
     Phi3_a = np.zeros(n_tot) # D number flux array [atoms/s/m2]
     Phi4_a = np.zeros(n_tot) # O number flux array [atoms/s/m2]
     Phi5_a = np.zeros(n_tot) # C number flux array [atoms/s/m2]
+    Phi6_a = np.zeros(n_tot) # N number flux array [atoms/s/m2]
+    Phi7_a = np.zeros(n_tot) # S number flux array [atoms/s/m2]
     T_surf_analytic_a = np.zeros(n_tot) # surface temperature from analytic calculation array [K]
     T_surf_atmod_a = np.zeros(n_tot) # atmodeller surface temperature array (capped at 6000 K) [K]
 
@@ -173,7 +187,7 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
     for n in range(n_tot):
 
     ### Stop simulation when entire atmosphere is lost
-        if M_atm <= 0 or y1 + y2 + y3 + y4 + y5 <= 0:
+        if M_atm <= 0 or y1 + y2 + y3 + y4 + y5 + y6 + y7 <= 0:
             Matm_a[n:] = 0 #M_atm #Matm_a[n-1]
             fatm_a[n:] = 0 #f_atm #fatm_a[n-1]
             Renv_a[n:] = 0 #radius_env #Renv_a[n-1]
@@ -188,16 +202,22 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
             y3_a[n:] = 0 
             y4_a[n:] = 0 
             y5_a[n:] = 0 
+            y6_a[n:] = 0
+            y7_a[n:] = 0
             x1_a[n:] = x1_a[n-1] 
             x2_a[n:] = x2_a[n-1] 
             x3_a[n:] = x3_a[n-1] 
             x4_a[n:] = x4_a[n-1] 
             x5_a[n:] = x5_a[n-1] 
+            x6_a[n:] = x6_a[n-1]
+            x7_a[n:] = x7_a[n-1]
             Phi1_a[n:] = 0
             Phi2_a[n:] = 0    
             Phi3_a[n:] = 0
             Phi4_a[n:] = 0
             Phi5_a[n:] = 0
+            Phi6_a[n:] = 0
+            Phi7_a[n:] = 0
 
             # atmodeller full ouput for monte carlo runs
             if n_atmodeller != 0:
@@ -214,6 +234,11 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
                 atmod_full_output['CO2_mantle'] = np.nan
                 atmod_full_output['CH4_atm'] = np.nan
                 atmod_full_output['CH4_mantle'] = np.nan
+                #atmod_full_output['He_atm'] = np.nan ???
+                atmod_full_output['N2_atm'] = np.nan
+                atmod_full_output['N2_mantle'] = np.nan
+                atmod_full_output['S2_atm'] = np.nan
+                atmod_full_output['S2_mantle'] = np.nan
                 atmod_full_output['He_mantle'] = np.nan
                 atmod_full_output['O2_fugacity'] = np.nan
                 if save_molecules == True:
@@ -223,13 +248,15 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
                     CO2_a[n:] = 0
                     CO_a[n:] = 0
                     CH4_a[n:] = 0
+                    N2_a[n:] = 0
+                    S2_a[n:] = 0
                     fO2_a[n:] = 0
 
             break
 
         # time-variable average atomic mass
-        N_tot = y1 + y2 + y3 + y4 + y5
-        mu = (y1*mu_H + y2*mu_He + y3*mu_D + y4*mu_O + y5*mu_C)/N_tot
+        N_tot = y1 + y2 + y3 + y4 + y5 + y6 + y7
+        mu = (y1*mu_H + y2*mu_He + y3*mu_D + y4*mu_O + y5*mu_C +y6*mu_N + y7*mu_S)/N_tot
 
         if rad_evol == False:
             radius_env = 0
@@ -275,17 +302,23 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
         H_D = R_gas*T/(M_D*g) # D scale height [m]
         H_O = R_gas*T/(M_O*g) # O scale height [m]
         H_C = R_gas*T/(M_C*g) # O scale height [m]
+        H_N = R_gas*T/(M_N*g) # N scale height [m]
+        H_S = R_gas*T/(M_S*g) # S scale height [m]
 
         x1 = y1/N_tot
         x2 = y2/N_tot
         x3 = y3/N_tot
         x4 = y4/N_tot
         x5 = y5/N_tot
+        x6 = y6/N_tot
+        x7 = y7/N_tot
         Phi1, phi_c = Phi_1(phi, b, H_H, H_He, mu_H, mu_He, x1, x2, mu, output = 1) # H number flux [atoms/s/m2]
         Phi2 = Phi_2(phi, b, H_H, H_He, mu_H, mu_He, x1, x2, mu) # He number flux [atoms/s/m2]
         Phi3 = Phi_D_Z90(Phi1, Phi2, H_H, H_D, H_He, y1, y2, y3, y4, y5, T) # D number flux [atoms/s/m2]
         Phi4 = Phi_O_Z90(Phi1, Phi2, H_H, H_O, H_He, y1, y2, y3, y4, y5, T) # O number flux [atoms/s/m2]
         Phi5 = Phi_C_Z90(Phi1, Phi2, H_H, H_C, H_He, y1, y2, y3, y4, y5, T) # C number flux [atoms/s/m2]
+        Phi6 = Phi_N_Z90(Phi1, Phi2, H_H, H_N, H_He, y1, y2, y3, y4, y5, y6, y7, T) # N number flux [atoms/s/m2] -> ask Collin if I should add y6,y7 to the other functions ? -> need to update isofunks.py then
+        Phi7 = Phi_S_Z90(Phi1, Phi2, H_H, H_S, H_He, y1, y2, y3, y4, y5, y6, y7, T) # S number flux [atoms/s/m2] -> ask Collin
 
         # record values
         Matm_a[n] = M_atm
@@ -302,28 +335,36 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
         y3_a[n] = y3
         y4_a[n] = y4
         y5_a[n] = y5
+        y6_a[n] = y6
+        y7_a[n] = y7
         y1_a_int[n] = N_H_int
         y2_a_int[n] = N_He_int
         y3_a_int[n] = N_D_int
         y4_a_int[n] = N_O_int
         y5_a_int[n] = N_C_int
+        y6_a_int[n] = N_N_int
+        y7_a_int[n] = N_S_int
         x1_a[n] = x1
         x2_a[n] = x2
         x3_a[n] = x3
         x4_a[n] = x4
         x5_a[n] = x5
+        x6_a[n] = x6
+        x7_a[n] = x7
         Phi1_a[n] = Phi1
         Phi2_a[n] = Phi2
         Phi3_a[n] = Phi3
         Phi4_a[n] = Phi4
         Phi5_a[n] = Phi5
+        Phi6_a[n] = Phi6
+        Phi7_a[n] = Phi7
 
         ##### run atmodeller ######
         if n_atmodeller != 0: # save final molecular abundances on last time step
             if n == n_steps - 1:
                 # atmod_full_output = {}
                 atmod_sol = AtmodellerCoupler(T, Mp, radius_p, mu, melt_fraction_override, mantle_iron_dict,
-                                                  y1+y3, y2, y4, y5, N_H_int+N_D_int, N_He_int, N_O_int, N_C_int, planet)[1]
+                                                  y1+y3, y2, y4, y5, y6, y7, N_H_int+N_D_int, N_He_int, N_O_int, N_C_int, N_N_int, N_S_int, planet)[1]
                 atmod_full_output['H2O_atm'] = atmod_sol['H2O_g'][0]['atmosphere_moles']
                 atmod_full_output['H2O_mantle'] = atmod_sol['H2O_g'][0]['melt_moles']
                 atmod_full_output['H2_atm'] = atmod_sol['H2_g'][0]['atmosphere_moles']
@@ -336,16 +377,23 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
                 atmod_full_output['CO2_mantle'] = atmod_sol['CO2_g'][0]['melt_moles']
                 atmod_full_output['CH4_atm'] = atmod_sol['CH4_g'][0]['atmosphere_moles']
                 atmod_full_output['CH4_mantle'] = atmod_sol['CH4_g'][0]['melt_moles']
+                atmod_full_output['N2_atm'] = atmod_sol['N2_g'][0]['atmosphere_moles']
+                atmod_full_output['N2_mantle'] = atmod_sol['N2_g'][0]['melt_moles']
+                atmod_full_output['S2_atm'] = atmod_sol['S2_g'][0]['atmosphere_moles']
+                atmod_full_output['S2_mantle'] = atmod_sol['S2_g'][0]['melt_moles']
+                #atmod_full_output['He_atm'] = atmod_sol['He_g'][0]['atmosphere_moles'] # ???
                 atmod_full_output['He_mantle'] = atmod_sol['He_g'][0]['melt_moles']
                 atmod_full_output['O2_fugacity'] = atmod_sol['O2_g'][0]['fugacity']
             if n%n_atmodeller == 0: # run atmodeller every n_atmodeller steps.
                 atmod_results, atmod_full, mantle_iron_dict = AtmodellerCoupler(T, Mp, radius_p, mu, melt_fraction_override, mantle_iron_dict,
-                                                  y1+y3, y2, y4, y5, N_H_int+N_D_int, N_He_int, N_O_int, N_C_int, planet)
+                                                  y1+y3, y2, y4, y5, y6, y7,  N_H_int+N_D_int, N_He_int, N_O_int, N_C_int, N_N_int, N_S_int, planet)
                 N_H_int = atmod_results['N_H_int']*(1 - X_DH)
                 N_D_int = atmod_results['N_H_int']*X_DH
                 N_He_int = atmod_results['N_He_int']
                 N_O_int = atmod_results['N_O_int']
                 N_C_int = atmod_results['N_C_int']
+                N_N_int = atmod_results['N_N_int']
+                N_S_int = atmod_results['N_S_int']
                 if atmod_results['N_H_atm'] == 0:
                     y1 = 0
                     y3 = 0
@@ -357,6 +405,8 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
                 y2 = atmod_results['N_He_atm']
                 y4 = atmod_results['N_O_atm']
                 y5 = atmod_results['N_C_atm']
+                y6 = atmod_results['N_N_atm']
+                y7 = atmod_results['N_S_atm']
                 M_atm = atmod_results['M_atm']
                 f_atm = M_atm/Mp
                 T_surf_analytic = atmod_results['T_surface']
@@ -368,6 +418,8 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
                     CO2_a[n] = atmod_full['CO2_g'][0]['atmosphere_moles']
                     CO_a[n] = atmod_full['CO_g'][0]['atmosphere_moles']
                     CH4_a[n] = atmod_full['CH4_g'][0]['atmosphere_moles']
+                    N2_a[n] = atmod_full['N2_g'][0]['atmosphere_moles']
+                    S2_a[n] = atmod_full['S2_g'][0]['atmosphere_moles']
                     fO2_a[n] = atmod_full['O2_g'][0]['fugacity']
             else:
                 H2_a[n] = H2_a[n-1]
@@ -376,6 +428,8 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
                 CO2_a[n] = CO2_a[n-1]
                 CO_a[n] = CO_a[n-1]
                 CH4_a[n] = CH4_a[n-1]
+                N2_a[n] = N2_a[n-1]
+                S2_a[n] = S2_a[n-1]
                 fO2_a[n] = fO2_a[n-1]
         T_surf_analytic_a[n] = T_surf_analytic
         T_surf_atmod_a[n] = T_surf_atmod
@@ -389,19 +443,25 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
         y3_loss = Phi3*A*delta_t
         y4_loss = Phi4*A*delta_t
         y5_loss = Phi5*A*delta_t
-        M_atm -= (y1_loss*mu_H + y2_loss*mu_He + y3_loss*mu_D + y4_loss*mu_O + y5_loss*mu_C)
+        y6_loss = Phi6*A*delta_t
+        y7_loss = Phi7*A*delta_t
+        M_atm -= (y1_loss*mu_H + y2_loss*mu_He + y3_loss*mu_D + y4_loss*mu_O + y5_loss*mu_C + y6_loss*mu_N + y7_loss*mu_S)
         f_atm = M_atm/Mp
         y1 -= y1_loss
         y2 -= y2_loss
         y3 -= y3_loss
         y4 -= y4_loss
         y5 -= y5_loss
+        y6 -= y6_loss
+        y7 -= y7_loss
 
         y1 = max(y1, 0) #HACK
         y2 = max(y2, 0)
         y3 = max(y3, 0)
         y4 = max(y4, 0)
         y5 = max(y5, 0)
+        y6 = max(y6, 0)
+        y7 = max(y7, 0)
     
 
     # save results
@@ -420,21 +480,29 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
     'N_D': y3_a,
     'N_O': y4_a,
     'N_C': y5_a,
+    'N_N': y6_a,
+    'N_S': y7_a,
     'N_H_int': y1_a_int,
     'N_He_int': y2_a_int,
     'N_D_int': y3_a_int,
     'N_O_int': y4_a_int,
     'N_C_int': y5_a_int,
+    'N_N_int': y6_a_int,
+    'N_S_int': y7_a_int,
     'x1': x1_a,
     'x2': x2_a,
     'x3': x3_a,
     'x4': x4_a,
     'x5': x5_a,
+    'x6': x6_a,
+    'x7': x7_a,
     'Phi_H': Phi1_a,
     'Phi_He': Phi2_a,
     'Phi_D': Phi3_a,
     'Phi_O': Phi4_a,
     'Phi_C': Phi5_a,
+    'Phi_N': Phi6_a,
+    'Phi_S': Phi7_a,
     'T_surf_analytic': T_surf_analytic_a,
     'T_surf_atmod': T_surf_atmod_a
     }
@@ -445,6 +513,8 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
         solutions['n_CO2_a'] = CO2_a,
         solutions['n_CO_a'] = CO_a,
         solutions['n_CH4_a'] = CH4_a,
+        solutions['n_N2_a'] = N2_a,
+        solutions['n_S2_a'] = S2_a,
         solutions['fO2_a'] = fO2_a
     if n_atmodeller != 0:
         solutions['atmodeller_final'] = atmod_full_output

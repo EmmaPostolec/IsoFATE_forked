@@ -32,8 +32,8 @@ import numpy as np
 # logger.setLevel(logging.INFO)
 
 def AtmodellerCoupler(Teq, Mp, Rp, mu, melt_fraction, mantle_iron_dict,
-                      N_H_atm, N_He_atm, N_O_atm, N_C_atm,
-                      N_H_int, N_He_int, N_O_int, N_C_int, planet):
+                      N_H_atm, N_He_atm, N_O_atm, N_C_atm, N_N_atm, N_S_atm,
+                      N_H_int, N_He_int, N_O_int, N_C_int, N_N_int, N_S_int, planet):
 
     results = {}
     gamma = 7/5
@@ -59,21 +59,27 @@ def AtmodellerCoupler(Teq, Mp, Rp, mu, melt_fraction, mantle_iron_dict,
     CO_g = GasSpecies("CO", thermodata_dataset=ThermodynamicDatasetHollandAndPowell()) #, solubility = CO_basalt_yoshioka())
     CO2_g = GasSpecies("CO2", thermodata_dataset=ThermodynamicDatasetHollandAndPowell()) #, solubility=CO2_basalt_dixon())
     CH4_g = GasSpecies("CH4", thermodata_dataset=ThermodynamicDatasetHollandAndPowell()) #, solubility = CH4_basalt_ardia())
+    N2_g = GasSpecies("N2", thermodata_dataset=ThermodynamicDatasetHollandAndPowell()) #, solubility = N2_basalt_bernadou21()) -> not sure ask Collin again
+    S2_g = GasSpecies("S2", thermodata_dataset=ThermodynamicDatasetHollandAndPowell()) #, solubility = S2_basalt_boulliung23()) -> not sure ask Collin (in solubility folder from atmodeller)
     He_g = GasSpecies("He") #, solubility = He_basalt())
 
-    species = Species([H2O_g, H2_g, O2_g, CO_g, CO2_g, CH4_g, He_g])
+    species = Species([H2O_g, H2_g, O2_g, CO_g, CO2_g, CH4_g, N2_g, S2_g, He_g])
 
     # atmospheric masses
     mass_H: float = (N_H_atm + N_H_int)*mu_H
     mass_O: float = (N_O_atm + N_O_int)*mu_O
     mass_C: float = (N_C_atm + N_C_int)*mu_C
+    mass_N: float = (N_N_atm + N_N_int)*mu_N
+    mass_S: float = (N_S_atm + N_S_int)*mu_S
     mass_He: float = (N_He_atm + N_He_int)*mu_He
 
     constraints: SystemConstraints = SystemConstraints([
         ElementMassConstraint('O', mass_O),
         ElementMassConstraint('C', mass_C), 
         ElementMassConstraint('H', mass_H),
-        ElementMassConstraint('He', mass_He)
+        ElementMassConstraint('He', mass_He),
+        ElementMassConstraint('N', mass_N),
+        ElementMassConstraint('S', mass_S)
     ])
 
     # run atmodeller
@@ -132,6 +138,10 @@ def AtmodellerCoupler(Teq, Mp, Rp, mu, melt_fraction, mantle_iron_dict,
         results['N_O_int'] = sol['O_total'][0]['melt_moles']*avogadro
     results['N_C_atm'] = sol['C_total'][0]['atmosphere_moles']*avogadro
     results['N_C_int'] = sol['C_total'][0]['melt_moles']*avogadro
+    results['N_N_atm'] = sol['N_total'][0]['atmosphere_moles']*avogadro # -> not sure what to change in the above block for N and S ? nothing ? (seems to be only O2)
+    results['N_N_int'] = sol['N_total'][0]['melt_moles']*avogadro
+    results['N_S_atm'] = sol['S_total'][0]['atmosphere_moles']*avogadro
+    results['N_S_int'] = sol['S_total'][0]['melt_moles']*avogadro
     results['M_atm'] = sol['atmosphere'][0]['mass']
     results['T_surface'] = T_surface
     results['T_surface_atmod'] = surface_temperature

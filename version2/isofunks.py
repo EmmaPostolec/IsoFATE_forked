@@ -443,6 +443,60 @@ def Phi_C_Z90(Phi_H, Phi_He, H_H, H_C, H_He, N_H, N_He, N_D, N_O, N_C, T):
     denom = 1 + alpha_3*f_He
     return max(0, f_C*num/denom)
 
+def Phi_N_Z90(Phi_H, Phi_He, H_H, H_N, H_He, N_H, N_He, N_D, N_O, N_C, N_N, N_S, T):
+    '''
+    Calculates number flux of nitrogen for simultaneous calculation of H/He/D/O/C/N/S escape
+    Derived from Zahnle et al 1990 starting w/ their Eq (17)
+
+    Inputs:
+        - Phi_i: number flux [particles/m2/s]
+        - H_i: scale height [m]
+        - N_i: particles of species i
+        - T: eq temp [K]
+    '''
+    if (N_H + N_He + N_D + N_O + N_C + N_N + N_S == 0) or N_H == 0:
+        return 0
+    b_H_N = 4.85e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
+    b_H_He = 1.04e20*T**0.732 # [molecules/m/s] from Mason & Marrero 1970 for H in He
+    b_He_N = 2.64e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
+    alpha_2 = b_H_N/b_H_He
+    alpha_3 = b_H_N/b_He_N
+    Phi_DL_N = b_H_N*(1/H_N - 1/H_H)
+    Phi_DL_He = b_H_He*(1/H_He - 1/H_H)
+    x_He = N_He/(N_H + N_He + N_D + N_O + N_C + N_N + N_S)
+    f_He = N_He/N_H
+    f_N = N_N/N_H
+    num = Phi_H - Phi_DL_N + alpha_2*Phi_DL_He*x_He + alpha_3*Phi_He
+    denom = 1 + alpha_3*f_He
+    return max(0, f_N*num/denom)
+
+def Phi_S_Z90(Phi_H, Phi_He, H_H, H_N, H_He, N_H, N_He, N_D, N_O, N_C, N_N, N_S, T):
+    '''
+    Calculates number flux of sulfur for simultaneous calculation of H/He/D/O/C/N/S escape
+    Derived from Zahnle et al 1990 starting w/ their Eq (17)
+
+    Inputs:
+        - Phi_i: number flux [particles/m2/s]
+        - H_i: scale height [m]
+        - N_i: particles of species i
+        - T: eq temp [K]
+    '''
+    if (N_H + N_He + N_D + N_O + N_C + N_N + N_S == 0) or N_H == 0:
+        return 0
+    b_H_S = 4.85e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
+    b_H_He = 1.04e20*T**0.732 # [molecules/m/s] from Mason & Marrero 1970 for H in He
+    b_He_S = 2.64e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
+    alpha_2 = b_H_S/b_H_He
+    alpha_3 = b_H_S/b_He_S
+    Phi_DL_S = b_H_S*(1/H_N - 1/H_H)
+    Phi_DL_He = b_H_He*(1/H_He - 1/H_H)
+    x_He = N_He/(N_H + N_He + N_D + N_O + N_C + N_N + N_S)
+    f_He = N_He/N_H
+    f_S = N_S/N_H
+    num = Phi_H - Phi_DL_S + alpha_2*Phi_DL_He*x_He + alpha_3*Phi_He
+    denom = 1 + alpha_3*f_He
+    return max(0, f_S*num/denom)
+
 #####_____ Lopez & Fortney 2014 thermal evolution equations _____#####
 
 # planetary core radius
