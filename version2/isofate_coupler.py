@@ -314,10 +314,10 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
         x7 = y7/N_tot
         Phi1, phi_c = Phi_1(phi, b, H_H, H_He, mu_H, mu_He, x1, x2, mu, output = 1) # H number flux [atoms/s/m2]
         Phi2 = Phi_2(phi, b, H_H, H_He, mu_H, mu_He, x1, x2, mu) # He number flux [atoms/s/m2]
-        Phi3 = Phi_D_Z90(Phi1, Phi2, H_H, H_D, H_He, y1, y2, y3, y4, y5, T) # D number flux [atoms/s/m2]
-        Phi4 = Phi_O_Z90(Phi1, Phi2, H_H, H_O, H_He, y1, y2, y3, y4, y5, T) # O number flux [atoms/s/m2]
-        Phi5 = Phi_C_Z90(Phi1, Phi2, H_H, H_C, H_He, y1, y2, y3, y4, y5, T) # C number flux [atoms/s/m2]
-        Phi6 = Phi_N_Z90(Phi1, Phi2, H_H, H_N, H_He, y1, y2, y3, y4, y5, y6, y7, T) # N number flux [atoms/s/m2] -> ask Collin if I should add y6,y7 to the other functions ? -> need to update isofunks.py then
+        Phi3 = Phi_D_Z90(Phi1, Phi2, H_H, H_D, H_He, y1, y2, y3, y4, y5, y6, y7, T) # D number flux [atoms/s/m2]
+        Phi4 = Phi_O_Z90(Phi1, Phi2, H_H, H_O, H_He, y1, y2, y3, y4, y5, y6, y7, T) # O number flux [atoms/s/m2]
+        Phi5 = Phi_C_Z90(Phi1, Phi2, H_H, H_C, H_He, y1, y2, y3, y4, y5, y6, y7, T) # C number flux [atoms/s/m2]
+        Phi6 = Phi_N_Z90(Phi1, Phi2, H_H, H_N, H_He, y1, y2, y3, y4, y5, y6, y7, T) # N number flux [atoms/s/m2] -> ask Collin if I should add y6,y7 to the other functions ? -> need to update isofunks.py then -> I did lets see how this goes
         Phi7 = Phi_S_Z90(Phi1, Phi2, H_H, H_S, H_He, y1, y2, y3, y4, y5, y6, y7, T) # S number flux [atoms/s/m2] -> ask Collin
 
         # record values

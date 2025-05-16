@@ -80,3 +80,11 @@ def b_H_C(T):
     return 4.85e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
 def b_He_C(T):
     return 2.64e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
+def b_H_N(T):
+    return 4.85e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
+def b_He_N(T):  
+    return 2.64e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
+def b_H_S(T):
+    return 4.85e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
+def b_He_S(T):
+    return 2.64e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
