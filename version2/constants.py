@@ -59,8 +59,12 @@ HetoH_protosolar = 0.09709 # He/H proto-solar mole ratio Lodders 2003 (0.2741/0.
 HetoH_protosolar_mass = 0.38551 # He/H proto-solar mass ratio Lodders 2003 (0.2741/0.711)
 OtoH_protosolar = 0.00058 # O/H proto-solar mole ratio from Lodders 2003 Table 2 (1.413e7/2.431e10)
 OtoH_protosolar_mass = OtoH_protosolar*(mu_O/mu_H) # O/H proto-solar mass ratio from Lodders 2003
-CtoH_protosolar = 0.00029 # C/H proto-solar mole ratio from Lodders 2003 Table 2
+CtoH_protosolar = 0.00029 # C/H proto-solar mole ratio from Lodders 2003 Table 2 (7.0709e6/2.431e10)
 CtoH_protosolar_mass = CtoH_protosolar*(mu_C/mu_H) # O/H proto-solar mass ratio from Lodders 2003
+NtoH_protosolar = 0.000080 # N/H proto-solar mole ratio from Lodders 2003 Table 2 (1.950e6/2.431e10)
+NtoH_protosolar_mass = NtoH_protosolar*(mu_N/mu_H) # O/H proto-solar mass ratio
+StoH_protosolar = 0.000018 # S/H proto-solar mole ratio from Lodders 2003 Table 2 (4.449e5/2.431e10)
+StoH_protosolar_mass = StoH_protosolar*(mu_S/mu_H) # O/H proto-solar mass ratio 
 mu_HHe = 0.00122/avogadro # H/He with solar abundances
 mu_H2He = 0.00227/avogadro # H2/He with solar abundances
 mu_solar = 0.00235/avogadro # average particle mass for solar metallicity
@@ -81,10 +85,10 @@ def b_H_C(T):
 def b_He_C(T):
     return 2.64e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
 def b_H_N(T):
-    return 1e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
+    return 4.85e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
 def b_He_N(T):  
-    return 1e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
+    return 2.65e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
 def b_H_S(T):
-    return 1e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
+    return 4.73e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
 def b_He_S(T):
-    return 1e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
+    return 2.48e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
