@@ -458,7 +458,7 @@ def Phi_N_Z90(Phi_H, Phi_He, H_H, H_N, H_He, N_H, N_He, N_D, N_O, N_C, N_N, N_S,
         return 0
     b_H_N = 4.85e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
     b_H_He = 1.04e20*T**0.732 # [molecules/m/s] from Mason & Marrero 1970 for H in He
-    b_He_N = 2.64e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
+    b_He_N = 2.65e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
     alpha_2 = b_H_N/b_H_He
     alpha_3 = b_H_N/b_He_N
     Phi_DL_N = b_H_N*(1/H_N - 1/H_H)
@@ -483,9 +483,9 @@ def Phi_S_Z90(Phi_H, Phi_He, H_H, H_N, H_He, N_H, N_He, N_D, N_O, N_C, N_N, N_S,
     '''
     if (N_H + N_He + N_D + N_O + N_C + N_N + N_S == 0) or N_H == 0:
         return 0
-    b_H_S = 4.85e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
+    b_H_S = 4.73e19*T**0.75 # [molecules/m/s] approximated from b_H_O using Genda/Ikoma 2008 prescription (Appendix C)
     b_H_He = 1.04e20*T**0.732 # [molecules/m/s] from Mason & Marrero 1970 for H in He
-    b_He_S = 2.64e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
+    b_He_S = 2.48e19*T**0.75 # [molecules/m/s] approximated from b_He_O using Genda/Ikoma 2008 prescription (Appendix C)
     alpha_2 = b_H_S/b_H_He
     alpha_3 = b_H_S/b_He_S
     Phi_DL_S = b_H_S*(1/H_N - 1/H_H)

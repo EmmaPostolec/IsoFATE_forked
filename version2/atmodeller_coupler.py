@@ -138,7 +138,7 @@ def AtmodellerCoupler(Teq, Mp, Rp, mu, melt_fraction, mantle_iron_dict,
         results['N_O_int'] = sol['O_total'][0]['melt_moles']*avogadro
     results['N_C_atm'] = sol['C_total'][0]['atmosphere_moles']*avogadro
     results['N_C_int'] = sol['C_total'][0]['melt_moles']*avogadro
-    results['N_N_atm'] = sol['N_total'][0]['atmosphere_moles']*avogadro # -> not sure what to change in the above block for N and S ? nothing ? (seems to be only O2)
+    results['N_N_atm'] = sol['N_total'][0]['atmosphere_moles']*avogadro 
     results['N_N_int'] = sol['N_total'][0]['melt_moles']*avogadro
     results['N_S_atm'] = sol['S_total'][0]['atmosphere_moles']*avogadro
     results['N_S_int'] = sol['S_total'][0]['melt_moles']*avogadro

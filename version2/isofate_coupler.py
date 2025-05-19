@@ -234,7 +234,6 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
                 atmod_full_output['CO2_mantle'] = np.nan
                 atmod_full_output['CH4_atm'] = np.nan
                 atmod_full_output['CH4_mantle'] = np.nan
-                #atmod_full_output['He_atm'] = np.nan ???
                 atmod_full_output['N2_atm'] = np.nan
                 atmod_full_output['N2_mantle'] = np.nan
                 atmod_full_output['S2_atm'] = np.nan
@@ -317,8 +316,8 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
         Phi3 = Phi_D_Z90(Phi1, Phi2, H_H, H_D, H_He, y1, y2, y3, y4, y5, y6, y7, T) # D number flux [atoms/s/m2]
         Phi4 = Phi_O_Z90(Phi1, Phi2, H_H, H_O, H_He, y1, y2, y3, y4, y5, y6, y7, T) # O number flux [atoms/s/m2]
         Phi5 = Phi_C_Z90(Phi1, Phi2, H_H, H_C, H_He, y1, y2, y3, y4, y5, y6, y7, T) # C number flux [atoms/s/m2]
-        Phi6 = Phi_N_Z90(Phi1, Phi2, H_H, H_N, H_He, y1, y2, y3, y4, y5, y6, y7, T) # N number flux [atoms/s/m2] -> ask Collin if I should add y6,y7 to the other functions ? -> need to update isofunks.py then -> I did lets see how this goes
-        Phi7 = Phi_S_Z90(Phi1, Phi2, H_H, H_S, H_He, y1, y2, y3, y4, y5, y6, y7, T) # S number flux [atoms/s/m2] -> ask Collin
+        Phi6 = Phi_N_Z90(Phi1, Phi2, H_H, H_N, H_He, y1, y2, y3, y4, y5, y6, y7, T) # N number flux [atoms/s/m2] 
+        Phi7 = Phi_S_Z90(Phi1, Phi2, H_H, H_S, H_He, y1, y2, y3, y4, y5, y6, y7, T) # S number flux [atoms/s/m2] 
 
         # record values
         Matm_a[n] = M_atm
@@ -381,7 +380,6 @@ beta = -1.23, n_atmodeller = int(1e2), save_molecules = False, mantle_iron_dict 
                 atmod_full_output['N2_mantle'] = atmod_sol['N2_g'][0]['melt_moles']
                 atmod_full_output['S2_atm'] = atmod_sol['S2_g'][0]['atmosphere_moles']
                 atmod_full_output['S2_mantle'] = atmod_sol['S2_g'][0]['melt_moles']
-                #atmod_full_output['He_atm'] = atmod_sol['He_g'][0]['atmosphere_moles'] # ???
                 atmod_full_output['He_mantle'] = atmod_sol['He_g'][0]['melt_moles']
                 atmod_full_output['O2_fugacity'] = atmod_sol['O2_g'][0]['fugacity']
             if n%n_atmodeller == 0: # run atmodeller every n_atmodeller steps.
